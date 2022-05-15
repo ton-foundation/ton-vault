@@ -1,10 +1,11 @@
 import { saveStorage, Storage } from "../storage/storage";
 import { prompt } from 'enquirer';
-import { mnemonicToHDSeed, deriveMnemonicsPath } from 'ton-crypto';
 import { log, warn } from '../utils/log';
 import ora from 'ora';
 import { printMnemonics } from "../utils/printMnemonics";
 import Table from "cli-table";
+import { deriveWallet } from "../utils/deriveWallet";
+import { askKey } from "../utils/askKey";
 
 export async function keysOps(dir: string, storage: Storage) {
     let res = await prompt<{ command: string }>([{
@@ -30,13 +31,16 @@ export async function keysOps(dir: string, storage: Storage) {
         if (Object.keys(storage.derived).length === 0) {
             warn('No keys created');
         } else {
+            const spinner = ora('Loading keys');
             var table = new Table({
-                colWidths: [23, 64]
+                colWidths: [12, 50, 64]
             });
             for (let path in storage.derived) {
                 let name = storage.derived[path];
-                table.push(['#' + path, name]);
+                let derived = await deriveWallet(storage, parseInt(path, 10));
+                table.push(['#' + path, derived.contract.address.toFriendly(), name]);
             }
+            spinner.succeed('Keys loaded')
             log(table.toString());
         }
     }
@@ -71,32 +75,20 @@ export async function keysOps(dir: string, storage: Storage) {
         } else {
 
             // Ask for a wallet
-            let wallet = (await prompt<{ wallet: string }>([{
-                type: 'select',
-                name: 'wallet',
-                message: 'Key to reveal',
-                initial: 0,
-                choices: Object.keys(storage.derived).map((v) => ({
-                    name: v,
-                    message: storage.derived[v]
-                }))
-            }])).wallet;
-
-            // Get name
-            let name = storage.derived[wallet];
-
-            // Id
-            let walletId = parseInt(wallet, 10);
+            let wallet = await askKey('Key to reveal', storage);
+            if (!wallet) {
+                return false;
+            }
 
             // Create seed
-            const spinner = ora('Loading key "' + name + '"');
-            let seed = await mnemonicToHDSeed(storage.mnemonics);
-            let derived = await deriveMnemonicsPath(seed, [0, walletId]);
-            spinner.succeed('Key "' + name + '" loaded');
+            const spinner = ora('Loading key "' + wallet.name + '"');
+            let derived = await deriveWallet(storage, wallet.id);
+            spinner.succeed('Key "' + wallet.name + '" loaded');
 
             // Print mnemonics
             warn('This key could be used with any TON wallet apps and/or as seed for new vault.');
-            printMnemonics(derived);
+            log('Address: ' + derived.contract.address.toFriendly());
+            printMnemonics(derived.mnemonics);
         }
     }
 

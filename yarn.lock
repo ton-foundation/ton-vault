@@ -53,6 +53,11 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@openland/patterns@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@openland/patterns/-/patterns-0.0.2.tgz#ada0417c4e72aeeb461bf9d8759ecd9ca1ebf51d"
+  integrity sha512-ttgJELwtG8cIER1JeWjkIMg3e+MlAL6n4wFPSNPoBCl+5t3G/HIz9kolvxBmN5/3RXEgh68NnePzGiUBaUHmRQ==
+
 "@scarf/scarf@^1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@scarf/scarf/-/scarf-1.1.1.tgz#d8b9f20037b3a37dbf8dcdc4b3b72f9285bfce35"
@@ -78,12 +83,19 @@
   resolved "https://registry.yarnpkg.com/@tsconfig/node16/-/node16-1.0.2.tgz#423c77877d0569db20e1fc80885ac4118314010e"
   integrity sha512-eZxlbI8GZscaGS7kkc/trHTT5xgrjH3/1n2JDwusC9iahPKWMRvRjJSAN5mCXviuTGQ/lHnhvv8Q1YTpnfz9gA==
 
+"@types/bn.js@^5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@types/bn.js/-/bn.js-5.1.0.tgz#32c5d271503a12653c62cf4d2b45e6eab8cebc68"
+  integrity sha512-QSSVYj7pYFN49kW77o2s9xTCwZ8F2xLbjLLSEVh8D2F4JUhZtPAGOFLTD+ffqksBx/u4cE/KImFjyhqCjn/LIA==
+  dependencies:
+    "@types/node" "*"
+
 "@types/cli-table@0.3.0":
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/@types/cli-table/-/cli-table-0.3.0.tgz#f1857156bf5fd115c6a2db260ba0be1f8fc5671c"
   integrity sha512-QnZUISJJXyhyD6L1e5QwXDV/A5i2W1/gl6D6YMc8u0ncPepbv/B4w3S+izVvtAg60m6h+JP09+Y/0zF2mojlFQ==
 
-"@types/node@17.0.33":
+"@types/node@*", "@types/node@17.0.33":
   version "17.0.33"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.33.tgz#3c1879b276dc63e73030bb91165e62a4509cd506"
   integrity sha512-miWq2m2FiQZmaHfdZNcbpp9PuXg34W5JZ5CrJ/BaS70VuhoJENBEQybeiYSaPBRNq6KQGnjfEnc/F3PN++D+XQ==
@@ -186,7 +198,7 @@ bn.js@4.11.6:
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.6.tgz#53344adb14617a13f6e8dd2ce28905d1c0ba3215"
   integrity sha1-UzRK2xRhehP26N0s4okF0cC6MhU=
 
-bn.js@5.2.0:
+bn.js@5.2.0, bn.js@^5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-5.2.0.tgz#358860674396c6997771a9d051fcc1b57d4ae002"
   integrity sha512-D7iWRBvnZE8ecXiLj/9wbxH7Tk79fAh8IHaTNq1RWRixsS02W+5qS+iE9yq6RYl0asXx5tw0bLhmT5pIfbSquw==
@@ -1177,6 +1189,13 @@ to-regex-range@^5.0.1:
   integrity sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==
   dependencies:
     is-number "^7.0.0"
+
+ton-contracts@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/ton-contracts/-/ton-contracts-3.1.0.tgz#aba38fe3dfdbd799f5d37a61601916956dfaefff"
+  integrity sha512-nT1CAdKsCS/XA/PMczJOgX42Cr2ZQa4NIwSifbd9M1Ukws4l7VjjFXQYPoWhEb2m43oqZqj3NO8X3WojWvFarA==
+  dependencies:
+    "@openland/patterns" "^0.0.2"
 
 ton-crypto-primitives@2.0.0:
   version "2.0.0"
