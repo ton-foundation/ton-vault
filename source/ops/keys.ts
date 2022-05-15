@@ -4,6 +4,7 @@ import { mnemonicToHDSeed, deriveMnemonicsPath } from 'ton-crypto';
 import { log, warn } from '../utils/log';
 import ora from 'ora';
 import { printMnemonics } from "../utils/printMnemonics";
+import Table from "cli-table";
 
 export async function keysOps(dir: string, storage: Storage) {
     let res = await prompt<{ command: string }>([{
@@ -29,10 +30,14 @@ export async function keysOps(dir: string, storage: Storage) {
         if (Object.keys(storage.derived).length === 0) {
             warn('No keys created');
         } else {
+            var table = new Table({
+                colWidths: [23, 64]
+            });
             for (let path in storage.derived) {
                 let name = storage.derived[path];
-                log('#' + path + ': ' + name);
+                table.push(['#' + path, name]);
             }
+            log(table.toString());
         }
     }
 

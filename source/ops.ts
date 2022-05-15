@@ -12,8 +12,8 @@ export async function opts(dir: string, storage: Storage) {
         message: 'Select command',
         initial: 0,
         choices: [
-            { name: 'Key management' },
-            { name: 'Contacts' },
+            { name: 'Keys management' },
+            { name: 'Contacts management' },
             { name: 'Backup vault' },
             { name: 'Exit' }
         ]
@@ -31,7 +31,7 @@ export async function opts(dir: string, storage: Storage) {
     }
 
     // Keys
-    if (res.command === 'Key management') {
+    if (res.command === 'Keys management') {
         while (true) {
             let exited = await keysOps(dir, storage);
             if (exited) {
@@ -42,7 +42,7 @@ export async function opts(dir: string, storage: Storage) {
     }
 
     // Keys
-    if (res.command === 'Contacts') {
+    if (res.command === 'Contacts management') {
         while (true) {
             let exited = await contactsOps(dir, storage);
             if (exited) {
