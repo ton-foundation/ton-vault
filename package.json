@@ -33,7 +33,12 @@
     "typescript": "4.6.4"
   },
   "pkg": {
-    "scripts": "source/**/*.js",
+    "scripts": [
+      "source/**/*.js"
+    ],
+    "assets":[
+      "node_modules/fp-ts/**/*"
+    ],
     "targets": [
       "node16-linux-arm64",
       "node16-linux-x64",
