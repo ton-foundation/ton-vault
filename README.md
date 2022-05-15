@@ -9,7 +9,7 @@ Features:
 
 ## Installation and upgrade
 
-Download from releases page. To upgrade you can just download binary and upload it to your cold storage machine.
+Download pre-build binaries from [releases page](https://github.com/ton-foundation/ton-vault/releases/latest). To upgrade you can just download binary and upload it to your cold storage machine.
 
 ## Getting started
 
