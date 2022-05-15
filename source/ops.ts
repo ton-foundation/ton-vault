@@ -1,19 +1,9 @@
 import { prompt } from 'enquirer';
-import { mnemonicToHDSeed, deriveMnemonicsPath } from 'ton-crypto';
-import { saveStorage, Storage } from "./storage/storage";
-import { log, warn } from './utils/log';
-import Table from 'cli-table';
-import ora from 'ora';
-
-function printMnemonics(mnemonics: string[]) {
-    var table = new Table({
-        colWidths: [24, 24, 24]
-    });
-    for (let i = 0; i < 8; i++) {
-        table.push([(i + 1) + '. ' + mnemonics[i], (i + 9) + '. ' + mnemonics[i + 8], (i + 17) + '. ' + mnemonics[i + 16]]);
-    }
-    log(table.toString());
-}
+import { Storage } from "./storage/storage";
+import { warn } from './utils/log';
+import { keysOps } from './ops/keys';
+import { printMnemonics } from './utils/printMnemonics';
+import { contactsOps } from './ops/contacts';
 
 export async function opts(dir: string, storage: Storage) {
     let res = await prompt<{ command: string }>([{
@@ -22,9 +12,8 @@ export async function opts(dir: string, storage: Storage) {
         message: 'Select command',
         initial: 0,
         choices: [
-            { name: 'List keys' },
-            { name: 'Create new key' },
-            { name: 'Reveal key mnemonics' },
+            { name: 'Key management' },
+            { name: 'Contacts' },
             { name: 'Backup vault' },
             { name: 'Exit' }
         ]
@@ -41,75 +30,26 @@ export async function opts(dir: string, storage: Storage) {
         printMnemonics(storage.mnemonics);
     }
 
-    // List mnemonics
-    if (res.command === 'List keys') {
-        if (Object.keys(storage.derived).length === 0) {
-            warn('No keys created');
-        } else {
-            for (let path in storage.derived) {
-                let name = storage.derived[path];
-                log('#' + path + ': ' + name);
+    // Keys
+    if (res.command === 'Key management') {
+        while (true) {
+            let exited = await keysOps(dir, storage);
+            if (exited) {
+                break;
             }
         }
+        return false;
     }
 
-    // Create new mnemonics
-    if (res.command === 'Create new key') {
-
-        // Ask name
-        let p = await prompt<{ name: string }>([{
-            type: 'input',
-            name: 'name',
-            message: 'Please, provide key name',
-            validate: (src) => src.trim().length > 0
-        }]);
-
-        // Resolve id
-        let maxExistingId = -1;
-        for (let path in storage.derived) {
-            maxExistingId = Math.max(parseInt(path, 10), maxExistingId);
+    // Keys
+    if (res.command === 'Contacts') {
+        while (true) {
+            let exited = await contactsOps(dir, storage);
+            if (exited) {
+                break;
+            }
         }
-        let nextId = maxExistingId + 1;
-
-        // Generate key
-        storage.derived[nextId] = p.name;
-        saveStorage(dir, storage);
-    }
-
-    // Reveal key mnemonics
-    if (res.command === 'Reveal key mnemonics') {
-        if (Object.keys(storage.derived).length === 0) {
-            warn('No keys created');
-        } else {
-
-            // Ask for a wallet
-            let wallet = (await prompt<{ wallet: string }>([{
-                type: 'select',
-                name: 'wallet',
-                message: 'Key to reveal',
-                initial: 0,
-                choices: Object.keys(storage.derived).map((v) => ({
-                    name: v,
-                    message: storage.derived[v]
-                }))
-            }])).wallet;
-
-            // Get name
-            let name = storage.derived[wallet];
-
-            // Id
-            let walletId = parseInt(wallet, 10);
-
-            // Create seed
-            const spinner = ora('Loading key "' + name + '"');
-            let seed = await mnemonicToHDSeed(storage.mnemonics);
-            let derived = await deriveMnemonicsPath(seed, [0, walletId]);
-            spinner.succeed('Key "' + name + '" loaded');
-
-            // Print mnemonics
-            warn('This key could be used with any TON wallet apps and/or as seed for new vault.');
-            printMnemonics(derived);
-        }
+        return false;
     }
 
     // Do not exit
