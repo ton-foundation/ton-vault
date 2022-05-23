@@ -6,6 +6,7 @@ import { printMnemonics } from "../utils/printMnemonics";
 import Table from "cli-table";
 import { deriveWallet } from "../utils/deriveWallet";
 import { askKey } from "../utils/askKey";
+import { printQR } from "../utils/printQR";
 
 export async function keysOps(dir: string, storage: Storage) {
     let res = await prompt<{ command: string }>([{
@@ -17,6 +18,7 @@ export async function keysOps(dir: string, storage: Storage) {
             { name: 'List keys' },
             { name: 'Create new key' },
             { name: 'Reveal key mnemonics' },
+            { name: 'Share address' },
             { name: 'Back' }
         ]
     }]);
@@ -89,6 +91,29 @@ export async function keysOps(dir: string, storage: Storage) {
             warn('This key could be used with any TON wallet apps and/or as seed for new vault.');
             log('Address: ' + derived.contract.address.toFriendly());
             printMnemonics(derived.mnemonics);
+        }
+    }
+
+    // Reveal key mnemonics
+    if (res.command === 'Share address') {
+        if (Object.keys(storage.derived).length === 0) {
+            warn('No keys created');
+        } else {
+
+            // Ask for a wallet
+            let wallet = await askKey('Key share', storage);
+            if (!wallet) {
+                return false;
+            }
+
+            // Create seed
+            const spinner = ora('Loading key "' + wallet.name + '"');
+            const derived = await deriveWallet(storage, wallet.id);
+            const address = derived.contract.address;
+            spinner.succeed('Key "' + wallet.name + '" loaded');
+
+            // Print address
+            printQR('ton://transfer/' + address.toFriendly(), {});
         }
     }
 
