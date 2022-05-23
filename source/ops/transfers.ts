@@ -35,6 +35,17 @@ async function createTrasfer(order: InternalMessage | null, seqno: number, deriv
     return boc;
 }
 
+async function createDeploy(derived: { contract: WalletV4Contract, keyPair: KeyPair }) {
+    let transfer = await derived.contract.createTransfer({
+        seqno: 0,
+        walletId: derived.contract.source.walletId,
+        secretKey: derived.keyPair.secretKey,
+        sendMode: SendMode.IGNORE_ERRORS | SendMode.PAY_GAS_SEPARATLY,
+        order: null
+    });
+    return transfer;
+}
+
 export async function transferOps(dir: string, storage: Storage) {
     let wallet = await askKey('Pick key', storage);
     if (!wallet) {
@@ -74,11 +85,15 @@ export async function transferOps(dir: string, storage: Storage) {
         }
 
         // Create signed message
-        let boc = await createTrasfer(null, 0, derived);
+        let boc = await createDeploy(derived);
 
         // Send boc
         warn('Scan this qr with your phone to send this transaction. Transaction valid only for 60 seconds!.');
-        printQR('https://tonwhales.com/tools/send', { data: boc.toBoc({ idx: false }).toString('base64url'), exp: (Math.floor(Date.now() / 1000) + 60).toString() });
+        printQR('https://tonwhales.com/tools/deploy-v4', {
+            pk: derived.keyPair.publicKey.toString('base64url'),
+            data: boc.toBoc({ idx: false }).toString('base64url'),
+            exp: (Math.floor(Date.now() / 1000) + 60).toString()
+        });
     }
 
     // Simple transfer
