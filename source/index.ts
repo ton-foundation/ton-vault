@@ -1,3 +1,4 @@
+require('dotenv').config();
 import { main } from "./main";
 (async () => {
     try {

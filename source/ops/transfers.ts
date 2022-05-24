@@ -46,6 +46,8 @@ async function createDeploy(derived: { contract: WalletV4Contract, keyPair: KeyP
     return transfer;
 }
 
+const host = process.env.TON_ENDPOINT || 'https://tonwhales.com';
+
 export async function transferOps(dir: string, storage: Storage) {
     let wallet = await askKey('Pick key', storage);
     if (!wallet) {
@@ -89,7 +91,7 @@ export async function transferOps(dir: string, storage: Storage) {
 
         // Send boc
         warn('Scan this qr with your phone to send this transaction. Transaction valid only for 60 seconds!.');
-        printQR('https://tonwhales.com/tools/deploy-v4', {
+        printQR(host + '/tools/deploy-v4', {
             pk: derived.keyPair.publicKey.toString('base64url'),
             data: boc.toBoc({ idx: false }).toString('base64url'),
             exp: (Math.floor(Date.now() / 1000) + 60).toString()
@@ -124,7 +126,7 @@ export async function transferOps(dir: string, storage: Storage) {
 
         // Send boc
         warn('Scan this qr with your phone to send this transaction. Transaction valid only for 60 seconds!.');
-        printQR('https://tonwhales.com/tools/send', { data: boc.toBoc({ idx: false }).toString('base64url'), exp: (Math.floor(Date.now() / 1000) + 60).toString() });
+        printQR(host + '/tools/send', { data: boc.toBoc({ idx: false }).toString('base64url'), exp: (Math.floor(Date.now() / 1000) + 60).toString() });
 
         // Exit transfers
         return true;
